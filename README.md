@@ -24,11 +24,13 @@ export type Store = {
   mySecondVar: number;
 };
 
+// set up the store with initial values
 createStore<Store>({
   myFirstVar: "",
   mySecondVar: 0,
 });
 
+// create a hook with your store type
 export function useStore<KeyT extends keyof Store>(key: KeyT) {
   return useStoreUntyped<Store, KeyT>(key);
 }
