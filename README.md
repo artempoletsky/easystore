@@ -66,7 +66,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
 Use your variables just like you use the `useState` React hook.
 ```tsx
-// somewhere.tsx
+// Component.tsx
 ...
 import { useStore } from "../../store";
 
@@ -105,13 +105,18 @@ const onMyFristVarChange = (myFirstVar: string) => {
   localStorage["myFirstVar"] = myFirstVar; // save the value in localStorage;
 }
 
-addChangeListener<Store, "myFirstVar">("myFirstVar", onMyFristVarChange); // subscribe to the variable changes
-removeChangeListener<Store, "myFirstVar">("myFirstVar", onMyFristVarChange); // unsubscribe
+// subscribe to the variable changes
+addChangeListener<Store, "myFirstVar">("myFirstVar", onMyFristVarChange);
+
+ // unsubscribe
+removeChangeListener<Store, "myFirstVar">("myFirstVar", onMyFristVarChange);
 
 // Store.someVar = someValue; // triggers the events
 ```
 
 ```tsx
+// Component.tsx
+
 ...
 const [myVar, setMyVar] = useStore("myVar");  
 setMyVar(value); // triggers the events
