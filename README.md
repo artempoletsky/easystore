@@ -81,3 +81,39 @@ export default function MyCounter() {
   )
 }
 ```
+
+## Advanced features 
+
+```typescript 
+// store.ts
+
+const Store = createStore<Store>({
+  myFirstVar: "",
+  mySecondVar: 0,
+}, ()=>{ // this is a useEffect function that runs in the StoreProvider component
+  Store.myFirstVar = localStorage["myFirstVar"]; // initialize value from localStorage
+  fetch(...).then(data => {
+    Store.myFirstVar = data; // initialize from the API
+  });
+});
+// Store is a proxy object that have the type Store 
+
+
+import { addChangeListener, removeChangeListener } from "@artempoletsky/easystore";
+
+const onMyFristVarChange = (myFirstVar: string) => {
+  localStorage["myFirstVar"] = myFirstVar; // save the value in localStorage;
+}
+
+addChangeListener<Store, "myFirstVar">("myFirstVar", onMyFristVarChange); // subscribe to the variable changes
+removeChangeListener<Store, "myFirstVar">("myFirstVar", onMyFristVarChange); // unsubscribe
+
+// Store.someVar = someValue; // triggers the events
+```
+
+```tsx
+...
+const [myVar, setMyVar] = useStore("myVar");  
+setMyVar(value); // triggers the events
+...
+```
