@@ -1,6 +1,6 @@
 {
   "name": "@artempoletsky/easystore",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Store for React",
   "types": "build/store.d.ts",
   "main": "build/store.js",

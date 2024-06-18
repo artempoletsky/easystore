@@ -26,8 +26,10 @@ export type Store = {
 
 // set up the store with initial values
 createStore<Store>({
-  myFirstVar: "",
-  mySecondVar: 0,
+  initialValues: {
+    myFirstVar: "",
+    mySecondVar: 0,
+  }
 });
 
 // create a hook with your store type
@@ -88,21 +90,35 @@ export default function MyCounter() {
 // store.ts
 
 const Store = createStore<Store>({
-  myFirstVar: "",
-  mySecondVar: 0,
-}, ()=>{ // this is a useEffect function that runs in the StoreProvider component
-  Store.myFirstVar = localStorage["myFirstVar"]; // initialize value from localStorage
-  fetch(...).then(data => {
-    Store.myFirstVar = data; // initialize from the API
-  });
+  initialValues: {
+    myFirstVar: "",
+    mySecondVar: 0,
+  },
+  useEffect(){ // this is a useEffect function that runs in the StoreProvider component
+    // Store.myFirstVar = localStorage["myFirstVar"]; // initialize value from localStorage
+    fetch(...).then(data => {
+      Store.myFirstVar = data; // initialize from the API
+    });
+  },
+  storeMappings: {
+    myFirstVar: true, // myFirstVar will be stored in localStorage 
+    // and keep it's state when you refresh the page
+  },
+  onChange: {
+    myFirstVar(value: string) {
+      // will be called on myFirstVar change 
+    }
+  }
 });
 // Store is a proxy object that have the type Store 
+```
 
-
+Alternatively you can add and remove event listeners this way:
+```typescript
 import { addChangeListener, removeChangeListener } from "@artempoletsky/easystore";
 
 const onMyFristVarChange = (myFirstVar: string) => {
-  localStorage["myFirstVar"] = myFirstVar; // save the value in localStorage;
+  // will be called on myFirstVar change 
 }
 
 // subscribe to the variable changes
@@ -121,4 +137,74 @@ removeChangeListener<Store, "myFirstVar">("myFirstVar", onMyFristVarChange);
 const [myVar, setMyVar] = useStore("myVar");  
 setMyVar(value); // triggers the events
 ...
+```
+
+
+You can store as well instances of a custom class which can't be directly placed in localStorage.
+
+In this case you have to implement toJSON method and optionally fromJSON method. 
+
+```typescript
+class Dog {
+  private name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  bark() {
+    console.log("The dog says:", this.name);
+  }
+
+  toJSON() { // localStorage["dog"] = JSON.stringify(dog.toJSON())
+    return this.name;
+  }
+}
+
+const Store = createStore<Store>({
+  initialValues: {
+    dog: new Dog("Dogmeat"),
+  },
+  useEffect(){
+    Store.dog.bark(); // logs to the console
+  },
+  storageMappings: {
+    dog(name: string) {// name == JSON.parse(localStorage["dog"])
+      return new Dog(name);
+    },
+  },
+});
+```
+
+With fromJSON method:
+```typescript
+class Dog {
+  private name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  bark() {
+    console.log("The dog says:", this.name);
+  }
+
+  toJSON() {
+    return this.name;
+  }
+
+  static fromJSON(name: string){
+    return new Dog(name);
+  }
+}
+
+const Store = createStore<Store>({
+  initialValues: {
+    dog: new Dog("Dogmeat"),
+  },
+  useEffect() {
+    Store.dog.bark(); // logs to the console
+  },
+  storageMappings: {
+    dog: Dog.fromJSON,
+  },
+});
 ```
