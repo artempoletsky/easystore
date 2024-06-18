@@ -38,11 +38,10 @@ export function useStore<KeyT extends keyof Store>(key: KeyT) {
 }
 ```
 
-Import this file in your root component with the `StoreProvider`.
+Import `StoreProvider` to your root component.
 ```tsx
 // layout.tsx
 ...
-import "./store";
 import { StoreProvider } from "@artempoletsky/easystore";
 ...
 ```
@@ -95,9 +94,8 @@ const Store = createStore<Store>({
     mySecondVar: 0,
   },
   useEffect(){ // this is a useEffect function that runs in the StoreProvider component
-    // Store.myFirstVar = localStorage["myFirstVar"]; // initialize value from localStorage
     fetch(...).then(data => {
-      Store.myFirstVar = data; // initialize from the API
+      Store.myFirstVar = data; // initialize the store value from the API
     });
   },
   storeMappings: {
@@ -117,15 +115,15 @@ Alternatively you can add and remove event listeners this way:
 ```typescript
 import { addChangeListener, removeChangeListener } from "@artempoletsky/easystore";
 
-const onMyFristVarChange = (myFirstVar: string) => {
+const onMyFirstVarChange = (myFirstVar: string) => {
   // will be called on myFirstVar change 
 }
 
 // subscribe to the variable changes
-addChangeListener<Store, "myFirstVar">("myFirstVar", onMyFristVarChange);
+addChangeListener<Store, "myFirstVar">("myFirstVar", onMyFirstVarChange);
 
  // unsubscribe
-removeChangeListener<Store, "myFirstVar">("myFirstVar", onMyFristVarChange);
+removeChangeListener<Store, "myFirstVar">("myFirstVar", onMyFirstVarChange);
 
 // Store.someVar = someValue; // triggers the events
 ```
